@@ -11,7 +11,7 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
 # Example schemas (replace with your own):
@@ -38,11 +38,20 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Direction/Reflection session schema
+class Reflection(BaseModel):
+    """
+    Reflection sessions captured from users going through the direction flow.
+    Collection name: "reflection" (lowercase of class name)
+    """
+    feeling: str = Field(..., description="How the user is feeling right now")
+    area: str = Field(..., description="Area of life needing direction (e.g., career)")
+    challenge: str = Field(..., description="Main challenge or confusion")
+    desired_outcome: str = Field(..., description="What clarity they hope to receive")
+    action_timeline: str = Field(..., description="How soon they want to take action")
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+    # Generated fields
+    distilled: Optional[str] = Field(None, description="A distilled interpretation of their answers")
+    guidance: Optional[list[str]] = Field(default=None, description="Tailored guidance or direction suggestions")
+    message: Optional[str] = Field(None, description="Short uplifting message")
+    emailed_to: Optional[EmailStr] = Field(default=None, description="If sent via email, the destination address")
